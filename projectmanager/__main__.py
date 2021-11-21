@@ -1,7 +1,4 @@
-from projectmanager.module1 import version
-
-def main():
-    version()
+from projectmanager.cli import entry_point
 
 if __name__ == '__main__':
-    main()
+    entry_point()
