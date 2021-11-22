@@ -1,4 +1,4 @@
-import logging
+import logging.config
 
 DEFAULT_LOGGING = {
     'version': 1,
@@ -16,10 +16,11 @@ DEFAULT_LOGGING = {
             'formatter': 'default'
         },
         'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 2000,
-            'backupCount': 10,
-            'formatter': 'default'
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': 'logfile.log',
+                'maxBytes': 2000,
+                'backupCount': 10,
+                'formatter': 'default',
         }
     },
     'loggers': {
