@@ -24,22 +24,29 @@ def check_subcommands(args):
             "Use one of the following:\n\t"+"\n\t".join(allowed_commands)
             )
 
+
 def check_name(args):
     """
     DOCSTRING
     """
     try:
-        print("In the try")
         import_module(args.name)
     except:
-        print("In the except")
         pass
     else:
-        print("In the else")
         raise Exception(
             f"Can not create '{args.name}' since a module with that name already exists. "
             "Please, choose another name."
         )
+    
+    if not args.name.isidentifier():
+        raise Exception(
+            f"'{args.name}' is not a valid name. Choose a name that:\n"
+            "   - Only contains alphanumeric characters i.e. [a-z] and [0-9] or underscores\n"
+            "   - Not starts with a number\n"
+            "   - Not contains any spaces\n"
+        )
+
 
 def parse_command_line():
     """
