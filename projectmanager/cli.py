@@ -48,19 +48,20 @@ def check_name(args):
         )
 
 
-def parse_command_line():
+def parse_command_line(argv=None):
     """
     DOCSTRING
     """
+    argv = argv or sys.argv
     parser = ArgumentParser()
     parser.add_argument("subcommand")
     parser.add_argument("name")
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args(argv)
 
     check_subcommands(args)
     check_name(args)
 
 
 
-def entry_point():
+def entry_point(argv=None):
     parse_command_line()
