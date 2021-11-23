@@ -18,7 +18,7 @@ DEFAULT_LOGGING = {
         'file': {
                 'class': 'logging.handlers.RotatingFileHandler',
                 'filename': 'logfile.log',
-                'maxBytes': 2000,
+                'maxBytes': 1024*1024,
                 'backupCount': 10,
                 'formatter': 'default',
         }

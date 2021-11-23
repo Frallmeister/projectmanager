@@ -3,17 +3,21 @@ DOCSTRING
 """
 
 import sys
-import os
+import logging
 from argparse import ArgumentParser
 from pathlib import Path
 from importlib import import_module
 import projectmanager.commands
 
 
-def check_subcommands(args):
+logger = logging.getLogger(__name__)
+
+def check_subcommand(args):
     """
-    DOCSTRING
+    Check that the provided subcommand exists.
     """
+
+    logger.debug("Entering validate_subcommand(args) with args = %s", args)
     commands_dir = Path(projectmanager.commands.__path__[0])
     commands_files = commands_dir.glob("*.py")
     allowed_commands = [file.stem for file in commands_files]
@@ -25,10 +29,14 @@ def check_subcommands(args):
             )
 
 
-def check_name(args):
+def validate_name(args):
     """
-    DOCSTRING
+    Check that no module exists with the name in args
     """
+
+    logger.debug("Entering validate_name(args) with args = %s", args)
+    if args.subcommand not in ['newproject', 'subpackage']:
+        return
     try:
         import_module(args.name)
     except:
@@ -50,18 +58,44 @@ def check_name(args):
 
 def parse_command_line(argv=None):
     """
-    DOCSTRING
+    Expects the two positional arguments 'subcommand' and 'name'
     """
-    argv = argv or sys.argv
+
+    logger.debug("Entering parse_command_line(argv) with argv = %s", argv)
+    try:
+        argv = argv or sys.argv[1:]
+    except IndexError:
+        argv = "help"
+
     parser = ArgumentParser()
-    parser.add_argument("subcommand")
-    parser.add_argument("name")
+    parser.add_argument("subcommand", help="Enter a subcommand")
+    parser.add_argument("name", help="Enter a name")
+
+    # Add the calling program to args before returning it in case subcommands
+    # later need to know if entry_point() was invoked by projectmanager.exe or manage.py
+    prog = parser.prog
     args = parser.parse_args(argv)
+    args.__dict__['prog'] = prog
+    return args
 
-    check_subcommands(args)
-    check_name(args)
 
+def call_command(args):
+    """
+    Call the command provided on the cli
+    """
 
+    logger.debug("Entering call_command(args) with args = %s", args)
+    module_path = f"projectmanager.commands.{args.subcommand}"
+    cmd_module = import_module(module_path)
+    cmd_module.handle(args)
 
 def entry_point(argv=None):
-    parse_command_line()
+    """
+    This is where it all starts!
+    """
+
+    logger.debug("Entering entry_point()")
+    args = parse_command_line()
+    check_subcommand(args)
+    validate_name(args)
+    call_command(args)
